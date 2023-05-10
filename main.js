@@ -47,6 +47,7 @@ let ships
 let turnCounter
 let winner
 let currentSelection
+let turn
 
 //? VISUAL ASSETS
 
@@ -67,10 +68,19 @@ class Ship {
         this.orientation = 'vertical'
         this.health = shipHealth[0]
         this.placed = false
+        this.damageCounter = 0
     }
 
     destroyedMessage() {
 
+    }
+
+    statusCheck() {
+        if (this.damageCounter === 0) return
+        if (this.damageCounter === 1 && this.health === shipHealth[0]) {
+            this.health = shipHealth[1]
+        }
+        if (this.damageCounter === this.length) this.health = shipHealth[2]
     }
 
     
@@ -88,7 +98,16 @@ class Ship {
 // Place ships
 
 // Select cell to fire on
-
+document.addEventListener('click', function(e) {
+    if (!isEnemyCell(e)) return
+    if (turn !== 1) return
+    let cell = document.getElementById(e.target.id)
+    if (validTarget(cell)) {
+        let ship = findShipByName('c', cell.ship)
+        ship.damageCounter++
+        ship.statusCheck()
+    }
+})
 // Restart game
 
 //! PLAY
@@ -107,9 +126,10 @@ function init() {
     playerBoard = []
     aiBoard = []
     ships = []
-    turnCounter = 0
+    turnCounter = 1
     winner = null
     currentSelection = null
+    turn = 1
     createBoards()
     createShips('p')
     createShips('c')
@@ -165,6 +185,12 @@ function boardMatcher(player) {
     return board
 }
 
+function findShipByName(player, name) {
+    const found = ships.find((ship) => 
+    ship.name === name && ship.owner === player)
+    return found
+}
+
 function placeShip(start, ship, player) {
     //Start = [row, column]
     if (ship.placed === true) return
@@ -177,6 +203,7 @@ function placeShip(start, ship, player) {
         for (let i=0; i<ship.length; i++) {
             board[row][col+i] = shipIdentifier
             renderCell([row, col+i], player)
+            tagCell([row, col+i], player, ship)
         }
     } else if (ship.orientation === 'vertical' && verticalPlacementAllowed(start, ship, board)) {
         ship.placed = true
@@ -184,6 +211,7 @@ function placeShip(start, ship, player) {
         for (let i=0; i<ship.length; i++) {
             board[row+i][col] = shipIdentifier
             renderCell([row+i, col], player)
+            tagCell([row+i, col], player, ship)
         }
     }
 }
@@ -200,6 +228,8 @@ function randomBetween(min, max) {
 }
 
 function placeShipsRandomly(ships, player) {
+    // The array reversal allows for greater dispersion between the ships, as placing the
+    // carrier (5 slot) first restricts the available area for future ship placement
     let shipsSubset = ships.filter((ship) => ship.owner === player).reverse()
     while (shipsSubset.length) {
         shipsSubset[0].orientation = shipOrientations[randomBetween(0,1)]
@@ -253,7 +283,7 @@ function pickTargetCellPlayer() {
 }
 
 function toggleTurn() {
-
+    turn *= -1
 }
 
 function restartGame() {
@@ -278,9 +308,31 @@ function renderCell(location, player) {
     cell.style.backgroundColor = cellStyle.find((obj) => board[row][col] in obj)[board[row][col]]
 }
 
+function tagCell(location, player, ship) {
+    let row = location[0]
+    let col = location[1]
+    let cell = getCellFromIndex(player, row, col)
+    cell.ship = `${ship.name}`
+}
+
 function getCellFromIndex(player, row, column) {
     let cell = document.getElementById(`${player}-${indexConverter(row)}${column}`)
     return cell
+}
+
+function getIndexFromCell(cell) {
+    let id = cell.id
+    let index = []
+    index.push(indexConverter(id[2]), Number(id[3]))
+    return index
+}
+
+function isEnemyCell(e) {
+    return e.target.id.slice(0,2) === 'c-'
+}
+
+function validTarget(cell) {
+    
 }
 
 function winScreen() {
