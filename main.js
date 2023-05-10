@@ -17,6 +17,13 @@ const countries = [
     {name: 'Russia', flag: 'src', flagLoss: 'src', anthem: 'src'},
     {name: 'China', flag: 'src', flagLoss: 'src', anthem: 'src'}
 ]
+const cellStyle = [
+    {0: 'white'},
+    {'s': 'grey'},
+    {'m': 'lightblue'},
+    {'h': 'orange'},
+    {'d': 'red'}
+]
 
 const difficulties = ['easy', 'normal', 'hard']
 const gamemodes = ['normal', 'salvo']
@@ -27,6 +34,7 @@ const shipOrientations = ['vertical', 'horizontal']
 const shipIdentifier = 's'
 const hitIdentifier = 'h'
 const missIdentifier = 'm'
+const destroyIdentifier = 'd'
 
 //? STATE VARIABLES
 let gamemode
@@ -45,8 +53,8 @@ let currentSelection
 //? MUSIC & SOUND EFFECTS
 
 //? ELEMENT REFERENCES
-// const musicButton
-// const soundButton
+const musicButton = null
+const soundButton = null
 const container = document.getElementById('container')
 
 //? CLASSES & INSTANCES
@@ -58,6 +66,7 @@ class Ship {
         this.startingPosition = null
         this.orientation = 'vertical'
         this.health = shipHealth[0]
+        this.placed = false
     }
 
     destroyedMessage() {
@@ -84,8 +93,8 @@ class Ship {
 
 //! PLAY
 init()
-placeShip([0,0], ships[0], playerBoard)
-placeShip([2,5], rotateShip(ships.find((ship) => ship.name === 'submarine')), playerBoard)
+placeShipsRandomly(ships, 'p')
+placeAIShips()
 
 //! FUNCTIONS
 //? GAME SET-UP, PLAYER ACTIONS, STATE TRANSITIONS
@@ -102,27 +111,10 @@ function init() {
     winner = null
     currentSelection = null
     createBoards()
-    createShips('player')
-    createShips('ai')
+    createShips('p')
+    createShips('c')
 
 }
-
-// to be done as event listeners -> simple variable changes
-// function selectMode() {
-
-// }
-
-// function selectDifficulty() {
-
-// }
-
-// function selectPlayerCountry() {
-
-// }
-
-// function selectAICountry() {
-
-// }
 
 function createBoard(player, playerBoard) {
     let board = document.createElement('div')
@@ -147,8 +139,8 @@ function createBoards() {
 
 function createShips(player) {
     shipInfo.forEach(ship => {
-        let boat = new Ship(ship.length, ship.name, player)
-        ships.push(boat)
+        let newShip = new Ship(ship.length, ship.name, player)
+        ships.push(newShip)
     })
 }
 
@@ -163,20 +155,59 @@ function rotateShip(ship) {
     return ship
 }
 
-function placeShip(start, ship, board) {
+function boardMatcher(player) {
+    let board
+    if (player === 'p') {
+        board = playerBoard
+    } else if (player === 'c') {
+        board = aiBoard
+    }
+    return board
+}
+
+function placeShip(start, ship, player) {
     //Start = [row, column]
+    if (ship.placed === true) return
+    let board = boardMatcher(player)
     let row = start[0]
     let col = start[1]
     if (ship.orientation === 'horizontal' && horizontalPlacementAllowed(start, ship, board)) {
+        ship.placed = true
+        ship.startingPosition = start
         for (let i=0; i<ship.length; i++) {
             board[row][col+i] = shipIdentifier
+            renderCell([row, col+i], player)
         }
     } else if (ship.orientation === 'vertical' && verticalPlacementAllowed(start, ship, board)) {
+        ship.placed = true
+        ship.startingPosition = start
         for (let i=0; i<ship.length; i++) {
             board[row+i][col] = shipIdentifier
+            renderCell([row+i, col], player)
         }
     }
 }
+
+function pickRandomCellIndex() {
+    let index = []
+    index.push(randomBetween(0,height-1))
+    index.push(randomBetween(0,width-1))
+    return index
+}
+
+function randomBetween(min, max) { 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+function placeShipsRandomly(ships, player) {
+    let shipsSubset = ships.filter((ship) => ship.owner === player).reverse()
+    while (shipsSubset.length) {
+        shipsSubset[0].orientation = shipOrientations[randomBetween(0,1)]
+        placeShip(pickRandomCellIndex(), shipsSubset[0], player)
+        if (shipsSubset[0].placed === true) shipsSubset.shift()
+    }
+}
+
 
 function horizontalPlacementAllowed(start, ship, board) {
     //Start = [row, column]
@@ -184,7 +215,6 @@ function horizontalPlacementAllowed(start, ship, board) {
     let col = start[1]
     let checkClash = board[row].slice(col, col+ship.length).every((value) => value === 0)
     let checkBounds = (col+ship.length<=width)
-    console.log(checkClash && checkBounds)
     return (checkClash && checkBounds)
 }
 
@@ -236,7 +266,21 @@ function render() {
 }
 
 function renderBoard() {
+    renderPlayerBoard()
+    renderAIBoard()
+}
 
+function renderCell(location, player) {
+    let row = location[0]
+    let col = location[1]
+    let board = boardMatcher(player)
+    let cell = getCellFromIndex(player, row, col)
+    cell.style.backgroundColor = cellStyle.find((obj) => board[row][col] in obj)[board[row][col]]
+}
+
+function getCellFromIndex(player, row, column) {
+    let cell = document.getElementById(`${player}-${indexConverter(row)}${column}`)
+    return cell
 }
 
 function winScreen() {
@@ -294,8 +338,8 @@ function playHard() {
 
 }
 
-function placeAIShips(board, ships) {
-
+function placeAIShips() {
+    placeShipsRandomly(ships, 'c')
 }
 
 function pickTargetCellAI() {
