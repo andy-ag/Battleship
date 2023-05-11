@@ -44,6 +44,8 @@ let countryAI
 let playerBoard
 let aiBoard
 let ships
+let playerShips
+let aiShips
 let turnCounter
 let winner
 let currentSelection
@@ -68,7 +70,6 @@ class Ship {
         this.orientation = 'vertical'
         this.health = shipHealth[0]
         this.placed = false
-        this.damageCounter = 0
     }
 
     destroyedMessage() {
@@ -76,11 +77,30 @@ class Ship {
     }
 
     statusCheck() {
-        if (this.damageCounter === 0) return
-        if (this.damageCounter === 1 && this.health === shipHealth[0]) {
-            this.health = shipHealth[1]
+        let board = boardMatcher(this.owner)
+        let positions = this.positionArray()
+        if (checkDestroyed(positions, board)) {
+            this.health = 'destroyed'
+            positions.forEach((position) => {
+                board[position[0]][position[1]] = 'd'
+            })
+        }  
+        else if (checkHit(positions, board)) this.health = 'damaged'
+        
+    }
+
+    positionArray() {
+        let positions = []
+        let row = this.startingPosition[0]
+        let col = this.startingPosition[1]
+        if (this.orientation === 'horizontal') {
+            for (let i=0; i<this.length; i++) {
+                positions.push([row, col+i])
+            }
+        } else for (let i=0; i<this.length; i++) {
+            positions.push([row+i, col])
         }
-        if (this.damageCounter === this.length) this.health = shipHealth[2]
+        return positions
     }
 
     
@@ -103,9 +123,10 @@ document.addEventListener('click', function(e) {
     if (turn !== 1) return
     let cell = document.getElementById(e.target.id)
     if (validTarget(cell)) {
-        let ship = findShipByName('c', cell.ship)
-        ship.damageCounter++
-        ship.statusCheck()
+        fireOnCell(cell)
+        checkAIShips()
+        renderBoard()
+        // toggleTurn()
     }
 })
 // Restart game
@@ -133,6 +154,7 @@ function init() {
     createBoards()
     createShips('p')
     createShips('c')
+    splitShips()
 
 }
 
@@ -162,6 +184,11 @@ function createShips(player) {
         let newShip = new Ship(ship.length, ship.name, player)
         ships.push(newShip)
     })
+}
+
+function splitShips() {
+    playerShips = ships.filter((ship) => ship.owner === 'p')
+    aiShips = ships.filter((ship) => ship.owner === 'c')
 }
 
 function hoverShip() {
@@ -214,6 +241,30 @@ function placeShip(start, ship, player) {
             tagCell([row+i, col], player, ship)
         }
     }
+}
+
+function checkAIShips() {
+    aiShips.forEach(function (ship) {
+        ship.statusCheck()
+    })
+}
+
+function checkPlayerShips() {
+    for (let ship of playerShips) {
+        ship.statusCheck()
+    }
+}
+
+function checkHit(positionArray, board) {
+    return positionArray.some((position) => {
+        return board[position[0]][position[1]] === 'h'
+    })
+}
+
+function checkDestroyed(positionArray, board) {
+    return positionArray.every((position) => {
+        return board[position[0]][position[1]] === 'h'
+    })
 }
 
 function pickRandomCellIndex() {
@@ -300,9 +351,27 @@ function renderBoard() {
     renderAIBoard()
 }
 
-function renderCell(location, player) {
-    let row = location[0]
-    let col = location[1]
+function renderPlayerBoard() {
+    for (let row=0; row<height; row++) {
+        for (let col=0; col<width; col++) {
+            let cell = getCellFromIndex('p', row, col)
+            cell.style.backgroundColor = cellStyle.find((obj) => playerBoard[row][col] in obj)[playerBoard[row][col]]
+        }
+    }
+}
+
+function renderAIBoard() {
+    for (let row=0; row<height; row++) {
+        for (let col=0; col<width; col++) {
+            let cell = getCellFromIndex('c', row, col)
+            cell.style.backgroundColor = cellStyle.find((obj) => aiBoard[row][col] in obj)[aiBoard[row][col]]
+        }
+    }
+}
+
+function renderCell(index, player) {
+    let row = index[0]
+    let col = index[1]
     let board = boardMatcher(player)
     let cell = getCellFromIndex(player, row, col)
     cell.style.backgroundColor = cellStyle.find((obj) => board[row][col] in obj)[board[row][col]]
@@ -332,8 +401,40 @@ function isEnemyCell(e) {
 }
 
 function validTarget(cell) {
-    
+    let index = getIndexFromCell(cell)
+    let row = index[0]
+    let col = index[1]
+    let board = getBoardFromCell(cell)
+    return (board[row][col] === 0 || board[row][col] === 's')
+
+
 }
+
+function getBoardFromCell(cell) {
+    if (cell.id[0] === 'p') {
+        return playerBoard
+    } else {
+        return aiBoard
+    }
+}
+
+function getPlayerFromCell(cell) {
+    return cell.id[0]
+}
+
+function fireOnCell(cell) {
+    // No restrictions on firing as this is handled in validTarget()
+    let index = getIndexFromCell(cell)
+    let row = index[0]
+    let col = index[1]
+    let board = getBoardFromCell(cell)
+    let player = getPlayerFromCell(cell)
+    if (board[row][col] === 0) {
+        board[row][col] = 'm'
+    } else board[row][col] = 'h'
+    renderCell([row, col], player)
+}
+
 
 function winScreen() {
     winMessage()
