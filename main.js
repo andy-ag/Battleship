@@ -17,13 +17,21 @@ const countries = [
     {name: 'Russia', flag: 'src', flagLoss: 'src', anthem: 'src'},
     {name: 'China', flag: 'src', flagLoss: 'src', anthem: 'src'}
 ]
-const cellStyle = [
+const playerCellStyle = [
     {0: 'white'},
     {'s': 'grey'},
     {'m': 'lightblue'},
     {'h': 'orange'},
     {'d': 'red'}
 ]
+
+const aiCellStyle = [
+    {0: 'white'},
+    {'s': 'grey'},
+    {'m': 'lightblue'},
+    {'h': 'orange'},
+    {'d': 'red'}
+] 
 
 const difficulties = ['easy', 'normal', 'hard']
 const gamemodes = ['normal', 'salvo']
@@ -50,6 +58,9 @@ let turnCounter
 let winner
 let currentSelection
 let validTargets
+let hunting
+let huntedShips
+let targetStack
 let turn
 
 //? VISUAL ASSETS
@@ -128,6 +139,7 @@ document.addEventListener('click', function(e) {
         postTurn()
         takeTurnEasy()
         postTurn()
+        turnCounter++
     }
 })
 
@@ -162,7 +174,7 @@ document.addEventListener('keyup', function(e) {
 //! PLAY
 init()
 placeAIShips()
-placeShipsRandomly(playerShips, 'p')
+// placeShipsRandomly(playerShips, 'p')
 
 
 //! FUNCTIONS
@@ -180,7 +192,10 @@ function init() {
     turnCounter = 1
     winner = null
     currentSelection = null
+    hunting = false
     turn = 0
+    huntedShips = []
+    targetStack = []
     createBoards()
     createShips('p')
     createShips('c')
@@ -439,7 +454,6 @@ function pickTargetCellPlayer() {
 
 function toggleTurn() {
     turn *= -1
-    console.log('Turn = ',turn)
 }
 
 function restartGame() {
@@ -460,7 +474,7 @@ function renderPlayerBoard() {
     for (let row=0; row<height; row++) {
         for (let col=0; col<width; col++) {
             let cell = getCellFromIndex('p', row, col)
-            cell.style.backgroundColor = cellStyle.find((obj) => playerBoard[row][col] in obj)[playerBoard[row][col]]
+            cell.style.backgroundColor = playerCellStyle.find((obj) => playerBoard[row][col] in obj)[playerBoard[row][col]]
         }
     }
 }
@@ -469,7 +483,7 @@ function renderAIBoard() {
     for (let row=0; row<height; row++) {
         for (let col=0; col<width; col++) {
             let cell = getCellFromIndex('c', row, col)
-            cell.style.backgroundColor = cellStyle.find((obj) => aiBoard[row][col] in obj)[aiBoard[row][col]]
+            cell.style.backgroundColor = aiCellStyle.find((obj) => aiBoard[row][col] in obj)[aiBoard[row][col]]
         }
     }
 }
@@ -479,7 +493,8 @@ function renderCell(index, player) {
     let col = index[1]
     let board = boardMatcher(player)
     let cell = getCellFromIndex(player, row, col)
-    cell.style.backgroundColor = cellStyle.find((obj) => board[row][col] in obj)[board[row][col]]
+    if (player === 'p') cell.style.backgroundColor = playerCellStyle.find((obj) => board[row][col] in obj)[board[row][col]]
+    else cell.style.backgroundColor = aiCellStyle.find((obj) => board[row][col] in obj)[board[row][col]]
 }
 
 function tagCell(location, player, ship) {
@@ -532,7 +547,7 @@ function getPlayerFromCell(cell) {
 }
 
 function fireOnCell(cell) {
-    // No restrictions on firing as this is handled in validTarget()
+    // No restrictions on firing as this is handled by outer functions
     let index = getCoordsFromCell(cell)
     let row = index[0]
     let col = index[1]
@@ -540,9 +555,33 @@ function fireOnCell(cell) {
     let player = getPlayerFromCell(cell)
     if (board[row][col] === 0) {
         board[row][col] = 'm'
-    } else board[row][col] = 'h'
-    renderCell([row, col], player)
+        renderCell([row, col], player)
+        return 'miss'
+    } else {
+        board[row][col] = 'h'
+        renderCell([row, col], player)
+        return getShipFromCoordinates(player, [row, col])
+    }
 }
+
+function getShipFromCoordinates(player, coordinates) {
+    let row = coordinates[0]
+    let col = coordinates[1]
+    let targetShip = null
+    for (let ship of ships) {
+        if (ship.owner !== player) continue
+        let shipCoordinates = ship.positionArray()
+        if (shipCoordinates.some(subarray => {                
+            return subarray.every((value, index) => {
+                return value === (index === 0 ? row : col)
+                    })
+            })) {
+                targetShip = ship
+            }
+    }
+    return targetShip
+    }
+
 
 function checkWin() {
     checkWinPlayer()
@@ -619,12 +658,67 @@ function takeTurnEasy() {
     fireOnCell(getCellFromIndex('p', target[0], target[1]))
 }
 
+// Hunting algorithm
+// If hit:
+//     set hit ship as current ship  
+//     semi-edge case -> hit different ship during hunt -> add to ship attack stack 
+//     get neighbours that are also in validTargets
+//     add to shot order stack
+//     when second hit on ship is made, vector is determined (row/col), update stack
+//     continue hunt until current ship is destroyed, if another ship in stack move to it
+//     otherwise proceed with random targeting 
+
+
+// let hunting
+// let huntedShips
+// let targetStack
+
+
 function takeTurnNormal() {
+    // Restrict valid targets to grid pattern - all ships occupy alternating tiles
+    if (hunting === 1) {
+        fireOnCell(getCellFromIndex(targetStack[0]))
+        targetStack.shift()
+        if (huntedShips[0].health === 'destroyed') {
+            targetStack.length = 0
+            huntedShips.shift()
+        }
+        if (huntedShips.length === 0) hunting = 0
+
+    }
+    let gridTargets = []
+    for (let i=0; i<height; i++) {
+        for (let j=0; j<width; j++) {
+            if (i % 2 === 0 && j % 2 === 1) gridTargets.push([i, j])
+            else if (i % 2 === 1 && j % 2 === 0) gridTargets.push([i, j])
+        }
+    }
+    // Take random shots at valid targets
+    let target = getRandomItemFromArray(gridTargets)
+    let index = gridTargets.indexOf(target)
+    gridTargets.splice(index, 1)
+    let shot = fireOnCell(getCellFromIndex('p', target[0], target[1]))
+    // If ship is hit, proceed with hunting algorithm
+    if (typeof(shot) === object) {
+        huntedShips.push(shot)
+        hunting = 1
+    }
 
 }
 
 function takeTurnHard() {
+    // First shot is random
+    if (turnCounter === 1) { 
+        let target = getRandomItemFromArray(validTargets)
+        let index = validTargets.indexOf(target)
+        validTargets.splice(index, 1)
+        fireOnCell(getCellFromIndex('p', target[0], target[1]))
+    }
+    // Given known board, run probability density estimation for each square
 
+    // If ship is hit, proceed with hunting algorithm
+
+    // After ship destroyed, revert to probabilistic attacks
 }
 
 function placeAIShips() {
