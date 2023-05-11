@@ -49,6 +49,7 @@ let aiShips
 let turnCounter
 let winner
 let currentSelection
+let validTargets
 let turn
 
 //? VISUAL ASSETS
@@ -68,7 +69,7 @@ class Ship {
         this.owner = owner
         this.startingPosition = null
         this.orientation = 'vertical'
-        this.health = shipHealth[0]
+        this.health = 'healthy'
         this.placed = false
     }
 
@@ -124,10 +125,9 @@ document.addEventListener('click', function(e) {
     let cell = document.getElementById(e.target.id)
     if (validTarget(cell)) {
         fireOnCell(cell)
-        checkAIShips()
-        renderBoard()
-        checkWin()
-        // toggleTurn()
+        postTurn()
+        takeTurnEasy()
+        postTurn()
     }
 })
 
@@ -136,11 +136,16 @@ document.addEventListener('click', function(e) {
     if (turn !== 0) return
     if (allShipsPlaced()) return
     placeShip(currentSelection.startingPosition, currentSelection, 'p')
+    if (allShipsPlaced()) {
+        turn = 1
+        console.log('Turn = ', turn)
+        return
+    }
 })
 
 document.addEventListener('mouseover', function(e) {
     if (!isPlayerCell(e)) return
-    if (turn !== 0) return
+    if (allShipsPlaced()) return
     let cell = e.target
     renderPlayerBoard()
     hoverShip(cell)
@@ -151,23 +156,27 @@ document.addEventListener('keyup', function(e) {
     if (e.key === 'r' || e.key === 'R') rotateShip(currentSelection)
 })
 
+
 //Restart game
 
 //! PLAY
 init()
 placeAIShips()
+placeShipsRandomly(playerShips, 'p')
+
 
 //! FUNCTIONS
 //? GAME SET-UP, PLAYER ACTIONS, STATE TRANSITIONS
 
 function init() {
     gamemode = null
-    difficulty = null
+    difficulty = 'easy'
     countryPlayer = null
     countryAI = null
     playerBoard = []
     aiBoard = []
     ships = []
+    initValidTargets()
     turnCounter = 1
     winner = null
     currentSelection = null
@@ -193,6 +202,15 @@ function createBoard(player, playerBoard) {
         }
     }
     container.appendChild(board)
+}
+
+function initValidTargets() {
+    validTargets = []
+    for (let i=0; i<height; i++) {
+        for (let j=0; j<width; j++) {
+            validTargets.push([i, j])
+        }
+    }
 }
 
 function createBoards() {
@@ -317,6 +335,17 @@ function checkAIShips() {
         ship.statusCheck()
     })
 }
+function postTurn() {
+    checkShips()
+    checkWin()
+    renderBoard()
+    toggleTurn()
+}
+
+function checkShips() {
+    checkAIShips()
+    checkPlayerShips()
+}
 
 function checkPlayerShips() {
     for (let ship of playerShips) {
@@ -356,8 +385,8 @@ function placeShipsRandomly(ships, player) {
         placeShip(pickRandomCellIndex(), shipsSubset[0], player)
         if (shipsSubset[0].placed === true) shipsSubset.shift()
     }
+    if (player === 'p') turn = 1
 }
-
 
 function horizontalPlacementAllowed(start, ship, board) {
     //Start = [row, column]
@@ -394,8 +423,14 @@ function indexConverter(index) {
     }
 }
 
-function toggleShip() {
+function getRandomItemFromArray(array) {
+    const choice = array[Math.floor(Math.random()*array.length)]
+    return choice
+}
 
+// Implement as bonus
+function toggleShip() {
+    
 }
 
 function pickTargetCellPlayer() {
@@ -404,10 +439,11 @@ function pickTargetCellPlayer() {
 
 function toggleTurn() {
     turn *= -1
+    console.log('Turn = ',turn)
 }
 
 function restartGame() {
-    init()
+    
 }
 
 //? RENDERING DOM ELEMENTS
@@ -565,16 +601,29 @@ function toggleAudio() {
 
 
 //? AI
+function takeTurn(difficulty) {
+    switch(difficulty) {
+        case 'easy': takeTurnEasy()
+        break
+        case 'normal': takeTurnNormal()
+        break
+        case 'hard': takeTurnHard()
+        default: takeTurnEasy()
+    }
+}
 
-function playEasy() {
+function takeTurnEasy() {
+    let target = getRandomItemFromArray(validTargets)
+    let index = validTargets.indexOf(target)
+    validTargets.splice(index, 1)
+    fireOnCell(getCellFromIndex('p', target[0], target[1]))
+}
+
+function takeTurnNormal() {
 
 }
 
-function playMedium() {
-
-}
-
-function playHard() {
+function takeTurnHard() {
 
 }
 
@@ -583,10 +632,6 @@ function placeAIShips() {
 }
 
 function pickTargetCellAI() {
-
-}
-
-function randomTargeting() {
 
 }
 
