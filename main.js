@@ -126,14 +126,35 @@ document.addEventListener('click', function(e) {
         fireOnCell(cell)
         checkAIShips()
         renderBoard()
+        checkWin()
         // toggleTurn()
     }
 })
-// Restart game
+
+document.addEventListener('click', function(e) {
+    if (!isPlayerCell(e)) return
+    if (turn !== 0) return
+    if (allShipsPlaced()) return
+    placeShip(currentSelection.startingPosition, currentSelection, 'p')
+})
+
+document.addEventListener('mouseover', function(e) {
+    if (!isPlayerCell(e)) return
+    if (turn !== 0) return
+    let cell = e.target
+    renderPlayerBoard()
+    hoverShip(cell)
+})
+
+document.addEventListener('keyup', function(e) {
+    if (turn !== 0) return
+    if (e.key === 'r' || e.key === 'R') rotateShip(currentSelection)
+})
+
+//Restart game
 
 //! PLAY
 init()
-placeShipsRandomly(ships, 'p')
 placeAIShips()
 
 //! FUNCTIONS
@@ -150,7 +171,7 @@ function init() {
     turnCounter = 1
     winner = null
     currentSelection = null
-    turn = 1
+    turn = 0
     createBoards()
     createShips('p')
     createShips('c')
@@ -191,10 +212,6 @@ function splitShips() {
     aiShips = ships.filter((ship) => ship.owner === 'c')
 }
 
-function hoverShip() {
-
-}
-
 function rotateShip(ship) {
     if (ship.orientation === 'vertical') {
         ship.orientation = 'horizontal'
@@ -216,6 +233,54 @@ function findShipByName(player, name) {
     const found = ships.find((ship) => 
     ship.name === name && ship.owner === player)
     return found
+}
+
+function getLivePlayerShips() {
+    let remainingShips = playerShips.filter(ship => ship.health !== 'destroyed')
+    return remainingShips
+}
+
+function getLiveAIShips() {
+    let remainingShips = aiShips.filter(ship => ship.health !== 'destroyed')
+    return remainingShips 
+}
+
+function getUnplacedPlayerShips() {
+    let unplacedShips = playerShips.filter(ship => ship.placed === false)
+    return unplacedShips
+}
+
+function allShipsPlaced() {
+    let test = getUnplacedPlayerShips()
+    if (test.length === 0) return true
+    else return false
+}
+
+function selectedShip() {
+    let availableShips = getUnplacedPlayerShips()
+    return availableShips[0]
+}
+
+function hoverShip(cell) {
+    currentSelection = selectedShip()
+    let middle = getCoordsFromCell(cell)
+    const adjustment = middleOfArrayIndex(currentSelection.length)
+    if (currentSelection.orientation === 'horizontal') {
+        currentSelection.startingPosition = [middle[0], middle[1]-adjustment]
+        let positions = currentSelection.positionArray()
+        positions.forEach((position) => {
+            let cell = getCellFromIndex('p',position[0], position[1])
+            cell.style.backgroundColor='pink'
+        })
+    } 
+    else {
+        currentSelection.startingPosition = [middle[0]-adjustment, middle[1]]
+        let positions = currentSelection.positionArray()
+        positions.forEach((position) => {
+            let cell = getCellFromIndex('p',position[0], position[1])
+            cell.style.backgroundColor='pink'
+        })
+    }
 }
 
 function placeShip(start, ship, player) {
@@ -241,6 +306,10 @@ function placeShip(start, ship, player) {
             tagCell([row+i, col], player, ship)
         }
     }
+}
+
+function middleOfArrayIndex(arrayLength) {
+    return Math.floor((arrayLength-1) / 2)
 }
 
 function checkAIShips() {
@@ -389,7 +458,7 @@ function getCellFromIndex(player, row, column) {
     return cell
 }
 
-function getIndexFromCell(cell) {
+function getCoordsFromCell(cell) {
     let id = cell.id
     let index = []
     index.push(indexConverter(id[2]), Number(id[3]))
@@ -397,11 +466,15 @@ function getIndexFromCell(cell) {
 }
 
 function isEnemyCell(e) {
-    return e.target.id.slice(0,2) === 'c-'
+    return e.target.id.slice(0,2) === 'c-' && e.target.id.length === 4
+}
+
+function isPlayerCell(e) {
+    return e.target.id.slice(0,2) === 'p-' && e.target.id.length === 4
 }
 
 function validTarget(cell) {
-    let index = getIndexFromCell(cell)
+    let index = getCoordsFromCell(cell)
     let row = index[0]
     let col = index[1]
     let board = getBoardFromCell(cell)
@@ -424,7 +497,7 @@ function getPlayerFromCell(cell) {
 
 function fireOnCell(cell) {
     // No restrictions on firing as this is handled in validTarget()
-    let index = getIndexFromCell(cell)
+    let index = getCoordsFromCell(cell)
     let row = index[0]
     let col = index[1]
     let board = getBoardFromCell(cell)
@@ -435,6 +508,20 @@ function fireOnCell(cell) {
     renderCell([row, col], player)
 }
 
+function checkWin() {
+    checkWinPlayer()
+    checkWinAI()
+}
+
+function checkWinPlayer() {
+    let remainingShips = getLiveAIShips()
+    if (remainingShips.length === 0) console.log('Victory!')
+}
+
+function checkWinAI() {
+    let remainingShips = getLivePlayerShips()
+    if (remainingShips.length === 0) console.log('Defeat..')
+}
 
 function winScreen() {
     winMessage()
