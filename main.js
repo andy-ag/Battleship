@@ -76,7 +76,7 @@ let activeShips
 //? ELEMENT REFERENCES
 const musicButton = null
 const soundButton = null
-const container = document.getElementById('container')
+// const container = document.getElementById('container')
 
 //? CLASSES & INSTANCES
 class Ship {
@@ -95,13 +95,21 @@ class Ship {
         let positions = this.positionArray()
         if (checkDestroyed(positions, board)) {
             this.health = 'destroyed'
-            destroyedMessage()
+            this.destroyedMessage()
             positions.forEach((position) => {
                 board[position[0]][position[1]] = 'd'
             })
         }  
         else if (checkHit(positions, board)) this.health = 'damaged'
         
+    }
+
+    destroyedMessage() {
+        if (this.owner === 'p') {
+            displayMessage(aiSubHitMessage, `${this.name.toUpperCase()} SUNK`)
+        } else {
+            displayMessage(playerSubHitMessage, `${this.name.toUpperCase()} SUNK`)
+        }
     }
 
     positionArray() {
@@ -138,9 +146,15 @@ document.addEventListener('click', function(e) {
     if (turn !== 1) return
     let cell = document.getElementById(e.target.id)
     if (validTarget(cell)) {
+        displayMessage(document.getElementById('mainItemInfoP'), 'PLAYER TURN')
+        displayMessage(document.getElementById('subItemInfoP'), `TURN ${turnCounter}`)
         fireOnCell(cell)
         postTurn()
+        displayMessage(document.getElementById('mainItemInfoP'), 'AI TURN')
+        displayMessage(document.getElementById('subItemInfoP'), `TURN ${turnCounter}`)
         takeTurn(difficulty)
+        displayMessage(document.getElementById('mainItemInfoP'), 'PLAYER TURN')
+        displayMessage(document.getElementById('subItemInfoP'), `TURN ${turnCounter}`)
         postTurn()
         turnCounter++
     }
@@ -153,9 +167,17 @@ document.addEventListener('click', function(e) {
     placeShip(currentSelection.startingPosition, currentSelection, 'p')
     if (allShipsPlaced()) {
         turn = 1
+        displayMessage(document.getElementById('mainItemInfoP'), 'PLAYER')
+        displayMessage(document.getElementById('subItemInfoP'), `TURN ${turnCounter}`)
         return
     }
 })
+
+document.addEventListener('mousemove', function(e) {
+    if (turn !== 0) return
+    displayMessage(document.getElementById('mainItemInfoP'), 'PLACE YOUR SHIPS')
+    displayMessage(document.getElementById('subItemInfoP'), 'PRESS R TO ROTATE')
+}) 
 
 document.addEventListener('mouseover', function(e) {
     if (!isPlayerCell(e)) return
@@ -227,7 +249,7 @@ function createBoard(player, playerBoard) {
             playerBoard[i].push(0)
         }
     }
-    container.appendChild(board)
+    document.getElementById('container').appendChild(board)
 }
 
 function initValidTargets() {
@@ -248,11 +270,13 @@ function addDiv(id, appendTo) {
 
 
 function createPlayingArea() {
+    addDiv('container', document.body)
     createBoard('p', playerBoard)
-    addDiv('infoPanel', container)
+    addDiv('infoPanel', document.getElementById('container'))
     addDiv('mainItemInfoP', document.getElementById('infoPanel'))
     addDiv('subItemInfoP', document.getElementById('infoPanel'))
     createBoard('c', aiBoard)
+    
     // createLowerPanel()
     addDiv('lowerPanel', document.body)
     addDiv('pShips', document.getElementById('lowerPanel'))
@@ -601,15 +625,16 @@ function fireOnCell(cell) {
         board[row][col] = 'h'
         renderCell([row, col], player)
         let hitShip = getShipFromCoordinates(player, [row, col])
-        hitShip.statusCheck()
         if (player === 'c') {
         displayMessage(playerMainHitMessage, `${indexConverter(row)}${col+1} - HIT!`)
         displayMessage(playerSubHitMessage, `${hitShip.name.toUpperCase()}`)
+        hitShip.statusCheck()
         return hitShip
         }
         if (player === 'p') {
         displayMessage(aiMainHitMessage, `${indexConverter(row)}${col+1} - HIT!`)
         displayMessage(aiSubHitMessage, `${hitShip.name.toUpperCase()}`)
+        hitShip.statusCheck()
         return hitShip
         }
     }
@@ -679,6 +704,7 @@ function checkWinPlayer() {
     let remainingShips = getLiveAIShips()
     if (remainingShips.length === 0) {
         console.log('Victory!')
+        displayMessage(document.getElementById('mainItemInfoP'), 'VICTORY!')
         turn = -1
         return true
     }
@@ -689,6 +715,7 @@ function checkWinAI() {
     let remainingShips = getLivePlayerShips()
     if (remainingShips.length === 0) { 
         console.log('Defeat..')
+        displayMessage(document.getElementById('mainItemInfoP'), 'DEFEAT..')
         turn = -1
         return true
     }
@@ -696,31 +723,11 @@ function checkWinAI() {
 }
 
 function winScreen() {
-    winMessage()
+    
 }
 
 function lossScreen() {
-    lossMessage()
-}
-
-function hitMessage() {
-
-}
-
-function missMessage() {
-
-}
-
-function destroyedMessage() {
-
-}
-
-function winMessage() {
-
-}
-
-function lossMessage() {
-
+    
 }
 
 function displayMessage(element, message) {
@@ -760,19 +767,6 @@ function takeTurnEasy() {
     randomAIShot()
 }
 
-// Hunting algorithm
-// If hit:
-//     set hit ship as current ship  
-//     semi-edge case -> hit different ship during hunt -> add to ship attack stack 
-//     get neighbours that are also in validTargets
-//     add to shot order stack
-//     when second hit on ship is made its vector is determined, update stack - keep items with same rol/col values
-//     otherwise proceed with random targeting 
-
-
-// let hunting
-// let huntedShips
-// let targetStack
 function getValidNeighbours(coordinates, targetsArray) {
     let neighbours = []
     let row = coordinates[0] 
@@ -847,8 +841,6 @@ function cleanTargetStack(index) {
     }        
 }
 
-
-
 function initGridTargets() {
     gridTargets = []
     for (let i=0; i<height; i++) {
@@ -867,6 +859,13 @@ function getIndexOfFirstNonEmptySubarray(huntInfoItem) {
     return huntInfoItem.findIndex(subarray => subarray.length !== 0)
 }
 
+// Hunting algorithm to enter when player ship is hit
+//  add ship to ship hunt queue
+//  if hit different ship during hunt -> add to queue, keep hunting current ship
+//  get neighbours of hit cell that are valid targets, add to hunted ship's target stack
+//  when second hit on ship is made its orientation is determined, update stack
+//  when ship destroyed, clear target stack, move to next ship
+// if queue empty, proceed with regular targeting
 function hunt(hIndex, hShip, tStack, hArray) {
     let shotCell = fireOnCell(getCellFromIndex('p', tStack[0][0], tStack[0][1]))
     let indexGrid = getIndexOfCoordinateArray(gridTargets, [tStack[0][0], tStack[0][1]])
@@ -903,7 +902,6 @@ function hunt(hIndex, hShip, tStack, hArray) {
     }
 }
 
-
 function takeTurnNormal() {
     let hIndex = huntInfo.huntIndex
     let hShip = huntInfo.huntedShips[hIndex]
@@ -931,7 +929,6 @@ function takeTurnNormal() {
     }
 
 }
-
 
 function takeTurnHard() {
     // First shot is random
@@ -1010,10 +1007,6 @@ function placeAIShips() {
     placeShipsRandomly(ships, 'c')
 }
 
-
-function estimateDensity() {
-
-}
 
 function getIndexOfMaxValue(array2d) {
     let largest = array2d.reduce((max, row) => Math.max(max, ...row), -Infinity)

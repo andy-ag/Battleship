@@ -35,6 +35,7 @@ body * {
     border: 1px solid lightgrey;
     height: 30px;
     width: 30px;
+    cursor: pointer;
   }
 
 #container {
@@ -47,92 +48,80 @@ body * {
 #infoPanel {
   height: 350px;
   width: 180px;
-  border: 1px solid lightgrey;
   flex-direction: column;
 }
 
 #mainItemInfoP {
   width: 180px;
   height: 150px;
-  border: 1px solid lightgrey;
 }
 
 #subItemInfoP {
   width: 180px;
   height: 50px;
-  border: 1px solid lightgrey;
 }
 
 
 
 #lowerPanel {
   height: 190px;
-  width: 900px;
-  border: 1px solid lightgrey;
+  width: 900p
 }
 
 #pShips {
   height: 190px;
-  width: 280px;
-  border: 1px solid lightgrey;
+  width: 280p
 }
 
 #aiShips {
   height: 190px;
-  width: 280px;
-  border: 1px solid lightgrey;
+  width: 280p
 }
 
 #hitInfo {
   height: 190px;
-  width: 300px;
-  border: 1px solid lightgrey;
+  width: 300p
   flex-direction: row;
 }
 
 #playerHitInfo {
   height: 190px;
   width: 150px;
-  border: 1px solid lightgrey;
   flex-direction: column;
 }
 
 #aiHitInfo {
   height: 190px;
   width: 150px;
-  border: 1px solid lightgrey;
   flex-direction: column;
 }
 
 #playerMainHitMessage {
   width: 150px;
   height: 90px;
-  border: 1px solid lightgrey;
-  font-size: 30px;
+  font-size: 25px;
   margin-bottom: -15px;;
 }
 
 #playerSubHitMessage {
   width: 150px;
   height: 90px;
-  border: 1px solid lightgrey;
-  font-size: 30px;
+  font-size: 25px;
   margin-top: -15px;
+  flex-wrap: wrap;
 }
 
 #aiMainHitMessage {
   width: 150px;
   height: 90px;
-  border: 1px solid lightgrey;
-  font-size: 30px;
+  font-size: 25px;
   margin-bottom: -15px;;
 }
 
 #aiSubHitMessage {
   width: 150px;
   height: 90px;
-  border: 1px solid lightgrey;
-  font-size: 30px;
+  font-size: 25px;
   margin-top: -15px;
+  flex-wrap: wrap;
 }
-
