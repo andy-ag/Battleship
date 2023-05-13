@@ -95,6 +95,7 @@ class Ship {
         let positions = this.positionArray()
         if (checkDestroyed(positions, board)) {
             this.health = 'destroyed'
+            destroyedMessage()
             positions.forEach((position) => {
                 board[position[0]][position[1]] = 'd'
             })
@@ -177,6 +178,12 @@ document.addEventListener('keyup', function(e) {
 
 //! PLAY
 init()
+const middleMessage = document.getElementById('mainItemInfoP')
+const middleSubmessage = document.getElementById('subItemInfoP')
+const playerMainHitMessage = document.getElementById('playerMainHitMessage')
+const playerSubHitMessage = document.getElementById('playerSubHitMessage')
+const aiMainHitMessage = document.getElementById('aiMainHitMessage')
+const aiSubHitMessage = document.getElementById('aiSubHitMessage')
 placeAIShips()
 // placeShipsRandomly(playerShips, 'p')
 
@@ -200,7 +207,7 @@ function init() {
     turn = 0
     initHuntInfo()
     hunting = 0
-    createBoards()
+    createPlayingArea()
     createShips('p')
     createShips('c')
     splitShips()
@@ -232,9 +239,33 @@ function initValidTargets() {
     }
 }
 
-function createBoards() {
+function addDiv(id, appendTo) {
+    let newDiv = document.createElement('div')
+    newDiv.id = id
+    appendTo.appendChild(newDiv)
+}
+
+
+
+function createPlayingArea() {
     createBoard('p', playerBoard)
+    addDiv('infoPanel', container)
+    addDiv('mainItemInfoP', document.getElementById('infoPanel'))
+    addDiv('subItemInfoP', document.getElementById('infoPanel'))
     createBoard('c', aiBoard)
+    // createLowerPanel()
+    addDiv('lowerPanel', document.body)
+    addDiv('pShips', document.getElementById('lowerPanel'))
+    addDiv('hitInfo', document.getElementById('lowerPanel'))
+    addDiv('aiShips', document.getElementById('lowerPanel'))
+    addDiv('playerHitInfo', document.getElementById('hitInfo'))
+    addDiv('playerMainHitMessage', document.getElementById('playerHitInfo'))
+    addDiv('playerSubHitMessage', document.getElementById('playerHitInfo'))
+    addDiv('aiHitInfo', document.getElementById('hitInfo'))
+    addDiv('aiMainHitMessage', document.getElementById('aiHitInfo'))
+    addDiv('aiSubHitMessage', document.getElementById('aiHitInfo'))
+
+
 }
 
 function createShips(player) {
@@ -556,13 +587,31 @@ function fireOnCell(cell) {
     if (board[row][col] === 0) {
         board[row][col] = 'm'
         renderCell([row, col], player)
+        if (player === 'c') {
+        displayMessage(playerMainHitMessage, `${indexConverter(row)}${col+1} - MISS!`)
+        displayMessage(playerSubHitMessage, ``)
         return 'miss'
+        }
+        if (player === 'p') {
+        displayMessage(aiMainHitMessage, `${indexConverter(row)}${col+1} - MISS!`)
+        displayMessage(aiSubHitMessage, ``)
+        return 'miss'
+        }
     } else {
         board[row][col] = 'h'
         renderCell([row, col], player)
         let hitShip = getShipFromCoordinates(player, [row, col])
         hitShip.statusCheck()
+        if (player === 'c') {
+        displayMessage(playerMainHitMessage, `${indexConverter(row)}${col+1} - HIT!`)
+        displayMessage(playerSubHitMessage, `${hitShip.name.toUpperCase()}`)
         return hitShip
+        }
+        if (player === 'p') {
+        displayMessage(aiMainHitMessage, `${indexConverter(row)}${col+1} - HIT!`)
+        displayMessage(aiSubHitMessage, `${hitShip.name.toUpperCase()}`)
+        return hitShip
+        }
     }
 }
 
@@ -674,8 +723,8 @@ function lossMessage() {
 
 }
 
-function displayMessage() {
-
+function displayMessage(element, message) {
+    element.innerText = message
 }
 
 function toggleMusic() {
@@ -937,9 +986,7 @@ function takeTurnHard() {
                 }
             }
         }
-        console.log(accumulatorBoard)
         let target = getIndexOfMaxValue(accumulatorBoard)
-        console.log(target)
         let indexFull = getIndexOfCoordinateArray(validTargets, target)
         validTargets.splice(indexFull, 1)
         let shotCell = fireOnCell(getCellFromIndex('p', target[0], target[1]))
