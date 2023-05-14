@@ -3,6 +3,7 @@
 const letters = ['A','B','C','D','E','F','G','H','I','J']
 const width = 10
 const height = 10
+const shipNames = ['carrier', 'battleship', 'cruiser', 'submarine', 'destroyer']
 const playerIndicators = ['p', 'c']
 const shipInfo = [
     {name: 'carrier', length: 5}, 
@@ -17,6 +18,8 @@ const countries = [
     {name: 'Russia', flag: 'src', flagLoss: 'src', anthem: 'src'},
     {name: 'China', flag: 'src', flagLoss: 'src', anthem: 'src'}
 ]
+
+const imageSources = ['assets/carrier.png','assets/battleship.png','assets/cruiser.png','assets/submarine.png','assets/destroyer.png']
 const playerCellStyle = [
     {0: 'white'},
     {'s': 'grey'},
@@ -27,7 +30,7 @@ const playerCellStyle = [
 
 const aiCellStyle = [
     {0: 'white'},
-    {'s': 'white'},
+    {'s': 'grey'},
     {'m': 'lightblue'},
     {'h': 'orange'},
     {'d': 'red'}
@@ -106,10 +109,14 @@ class Ship {
 
     destroyedMessage() {
         if (this.owner === 'p') {
-            displayMessage(aiSubHitMessage, `${this.name.toUpperCase()} SUNK`)
+            displayMessage(pMessage2, `${this.name.toUpperCase()} SUNK`)
         } else {
-            displayMessage(playerSubHitMessage, `${this.name.toUpperCase()} SUNK`)
+            displayMessage(aiMessage2, `${this.name.toUpperCase()} SUNK`)
         }
+    }
+
+    setGlow(colour) {
+          
     }
 
     positionArray() {
@@ -146,15 +153,15 @@ document.addEventListener('click', function(e) {
     if (turn !== 1) return
     let cell = document.getElementById(e.target.id)
     if (validTarget(cell)) {
-        displayMessage(document.getElementById('mainItemInfoP'), 'PLAYER TURN')
-        displayMessage(document.getElementById('subItemInfoP'), `TURN ${turnCounter}`)
+        displayMessage(info1, 'PLAYER TURN')
+        displayMessage(info2, `TURN ${turnCounter}`)
         fireOnCell(cell)
         postTurn()
-        displayMessage(document.getElementById('mainItemInfoP'), 'AI TURN')
-        displayMessage(document.getElementById('subItemInfoP'), `TURN ${turnCounter}`)
+        displayMessage(info1, 'AI TURN')
+        displayMessage(info2, `TURN ${turnCounter}`)
         takeTurn(difficulty)
-        displayMessage(document.getElementById('mainItemInfoP'), 'PLAYER TURN')
-        displayMessage(document.getElementById('subItemInfoP'), `TURN ${turnCounter}`)
+        displayMessage(info1, 'PLAYER TURN')
+        displayMessage(info2, `TURN ${turnCounter}`)
         postTurn()
         turnCounter++
     }
@@ -167,16 +174,18 @@ document.addEventListener('click', function(e) {
     placeShip(currentSelection.startingPosition, currentSelection, 'p')
     if (allShipsPlaced()) {
         turn = 1
-        displayMessage(document.getElementById('mainItemInfoP'), 'PLAYER')
-        displayMessage(document.getElementById('subItemInfoP'), `TURN ${turnCounter}`)
+        displayMessage(info1, 'PLAYER TURN')
+        displayMessage(info2, `TURN ${turnCounter}`)
+        displayMessage(info3, ``)
         return
     }
 })
 
 document.addEventListener('mousemove', function(e) {
     if (turn !== 0) return
-    displayMessage(document.getElementById('mainItemInfoP'), 'PLACE YOUR SHIPS')
-    displayMessage(document.getElementById('subItemInfoP'), 'PRESS R TO ROTATE')
+    displayMessage(info1, 'PLACE YOUR SHIPS')
+    displayMessage(info2, 'PRESS R TO ROTATE')
+    displayMessage(info3, '<--')
 }) 
 
 document.addEventListener('mouseover', function(e) {
@@ -185,6 +194,17 @@ document.addEventListener('mouseover', function(e) {
     hoveredCell = e.target
     renderPlayerBoard()
     hoverShip(hoveredCell)
+})
+
+document.addEventListener('mouseover', function(e) {
+    if (!isEnemyCell(e)) return
+    if (turn !== 1) return
+    hoveredCell = e.target
+    let row = getCoordsFromCell(hoveredCell)[0]
+    let col = getCoordsFromCell(hoveredCell)[1]
+    renderAIBoard()
+    hoverCell(hoveredCell)
+    displayMessage(info3,`${indexConverter(row)}${col+1}`)
 })
 
 document.addEventListener('keyup', function(e) {
@@ -200,12 +220,14 @@ document.addEventListener('keyup', function(e) {
 
 //! PLAY
 init()
-const middleMessage = document.getElementById('mainItemInfoP')
-const middleSubmessage = document.getElementById('subItemInfoP')
-const playerMainHitMessage = document.getElementById('playerMainHitMessage')
-const playerSubHitMessage = document.getElementById('playerSubHitMessage')
-const aiMainHitMessage = document.getElementById('aiMainHitMessage')
-const aiSubHitMessage = document.getElementById('aiSubHitMessage')
+const info1 = document.getElementById('info1')
+const info2 = document.getElementById('info2')
+const info3 = document.getElementById('info3')
+const pMessage1 = document.getElementById('pMessage1')
+const pMessage2 = document.getElementById('pMessage2')
+const aiMessage1 = document.getElementById('aiMessage1')
+const aiMessage2 = document.getElementById('aiMessage2')
+const lowerPanel = document.getElementById('lowerPanel')
 placeAIShips()
 // placeShipsRandomly(playerShips, 'p')
 
@@ -267,29 +289,49 @@ function addDiv(id, appendTo) {
     appendTo.appendChild(newDiv)
 }
 
+function addImg(id, src, appendTo) {
+    let img = document.createElement
+}
+
 
 
 function createPlayingArea() {
     addDiv('container', document.body)
     createBoard('p', playerBoard)
     addDiv('infoPanel', document.getElementById('container'))
-    addDiv('mainItemInfoP', document.getElementById('infoPanel'))
-    addDiv('subItemInfoP', document.getElementById('infoPanel'))
+    addDiv('info1', document.getElementById('infoPanel'))
+    addDiv('info2', document.getElementById('infoPanel'))
+    addDiv('info3', document.getElementById('infoPanel'))
     createBoard('c', aiBoard)
     
     // createLowerPanel()
     addDiv('lowerPanel', document.body)
-    addDiv('pShips', document.getElementById('lowerPanel'))
-    addDiv('hitInfo', document.getElementById('lowerPanel'))
-    addDiv('aiShips', document.getElementById('lowerPanel'))
-    addDiv('playerHitInfo', document.getElementById('hitInfo'))
-    addDiv('playerMainHitMessage', document.getElementById('playerHitInfo'))
-    addDiv('playerSubHitMessage', document.getElementById('playerHitInfo'))
-    addDiv('aiHitInfo', document.getElementById('hitInfo'))
-    addDiv('aiMainHitMessage', document.getElementById('aiHitInfo'))
-    addDiv('aiSubHitMessage', document.getElementById('aiHitInfo'))
-
-
+    addDiv('pInfo', document.getElementById('lowerPanel'))
+    addDiv('pMessage1', document.getElementById('pInfo'))
+    addDiv('pMessage2', document.getElementById('pInfo'))
+    addDiv('pShips', document.getElementById('pInfo'))
+    addDiv('aiInfo', document.getElementById('lowerPanel'))
+    addDiv('aiMessage1', document.getElementById('aiInfo'))
+    addDiv('aiMessage2', document.getElementById('aiInfo'))
+    addDiv('aiShips', document.getElementById('aiInfo'))
+    for (let i=0; i<5; i++) {
+        // let pship = document.createElement('div')
+        // let aiship = document.createElement('div')
+        let pship = document.createElement('img')
+        let aiship = document.createElement('img')
+        pship.src = imageSources[i]
+        aiship.src = imageSources[i]
+        pship.classList.add('ship')
+        aiship.classList.add('ship')
+        pship.id = `pShip${i}`
+        aiship.id = `aiShip${i}`
+        // pship.style.backgroundImage = imageSources[i]
+        // aiship.style.backgroundImage = imageSources[i]
+        let pships = document.getElementById('pShips')
+        let aiships = document.getElementById('aiShips')
+        pships.appendChild(pship)
+        aiships.appendChild(aiship)
+    }
 }
 
 function createShips(player) {
@@ -373,6 +415,10 @@ function hoverShip(cell) {
             cell.style.backgroundColor='pink'
         })
     }
+}
+
+function hoverCell(cell) {
+    cell.style.backgroundColor = 'pink'
 }
 
 function placeShip(start, ship, player) {
@@ -612,13 +658,13 @@ function fireOnCell(cell) {
         board[row][col] = 'm'
         renderCell([row, col], player)
         if (player === 'c') {
-        displayMessage(playerMainHitMessage, `${indexConverter(row)}${col+1} - MISS!`)
-        displayMessage(playerSubHitMessage, ``)
+        displayMessage(aiMessage1, `${indexConverter(row)}${col+1} - MISS!`)
+        displayMessage(aiMessage2, ``)
         return 'miss'
         }
         if (player === 'p') {
-        displayMessage(aiMainHitMessage, `${indexConverter(row)}${col+1} - MISS!`)
-        displayMessage(aiSubHitMessage, ``)
+        displayMessage(pMessage1, `${indexConverter(row)}${col+1} - MISS!`)
+        displayMessage(pMessage2, ``)
         return 'miss'
         }
     } else {
@@ -626,14 +672,14 @@ function fireOnCell(cell) {
         renderCell([row, col], player)
         let hitShip = getShipFromCoordinates(player, [row, col])
         if (player === 'c') {
-        displayMessage(playerMainHitMessage, `${indexConverter(row)}${col+1} - HIT!`)
-        displayMessage(playerSubHitMessage, `${hitShip.name.toUpperCase()}`)
+        displayMessage(aiMessage1, `${indexConverter(row)}${col+1} - HIT!`)
+        displayMessage(aiMessage2, `${hitShip.name.toUpperCase()}`)
         hitShip.statusCheck()
         return hitShip
         }
         if (player === 'p') {
-        displayMessage(aiMainHitMessage, `${indexConverter(row)}${col+1} - HIT!`)
-        displayMessage(aiSubHitMessage, `${hitShip.name.toUpperCase()}`)
+        displayMessage(pMessage1, `${indexConverter(row)}${col+1} - HIT!`)
+        displayMessage(pMessage2, `${hitShip.name.toUpperCase()}`)
         hitShip.statusCheck()
         return hitShip
         }
@@ -703,8 +749,7 @@ function checkWin() {
 function checkWinPlayer() {
     let remainingShips = getLiveAIShips()
     if (remainingShips.length === 0) {
-        console.log('Victory!')
-        displayMessage(document.getElementById('mainItemInfoP'), 'VICTORY!')
+        displayMessage(info1, 'VICTORY!')
         turn = -1
         return true
     }
@@ -714,8 +759,7 @@ function checkWinPlayer() {
 function checkWinAI() {
     let remainingShips = getLivePlayerShips()
     if (remainingShips.length === 0) { 
-        console.log('Defeat..')
-        displayMessage(document.getElementById('mainItemInfoP'), 'DEFEAT..')
+        displayMessage(info1, 'DEFEAT..')
         turn = -1
         return true
     }

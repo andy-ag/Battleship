@@ -6,8 +6,8 @@ html {
   }
 
   h1 {
-    font-size: 80px;
-    margin: 30px;
+    font-size: 60px;
+    margin: 10px;
   }
  
 body {
@@ -21,6 +21,7 @@ body * {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* border: 1px solid lightgrey; */
   }
 
 .board {
@@ -42,7 +43,8 @@ body * {
     display: flex;
     width: 900px;
     justify-content: space-between;
-    margin: 20px;
+    margin: 0;
+    font-size: 25px;
 }  
 
 #infoPanel {
@@ -51,77 +53,63 @@ body * {
   flex-direction: column;
 }
 
-#mainItemInfoP {
+#info1, #info2, #info3 {
   width: 180px;
-  height: 150px;
+  height: 30px;
 }
-
-#subItemInfoP {
-  width: 180px;
-  height: 50px;
-}
-
-
 
 #lowerPanel {
-  height: 190px;
-  width: 900p
+  height: 300px;
+  width: 900px;
+  justify-content: space-between;
+  font-size: 35px;
+}
+
+#pInfo, #aiInfo {
+  height: 300px;
+  width: 320px;
+  flex-direction: column;
+}
+
+#pMessage1, #pMessage2, #aiMessage1, #aiMessage2 {
+  height: 30px;
+  width: 320px;
 }
 
 #pShips {
-  height: 190px;
-  width: 280p
+  height: 200px;
+  width: 320px;
+  justify-content: space-evenly;
+  flex-direction: row-reverse;
+  padding-left: 15px;
 }
 
 #aiShips {
-  height: 190px;
-  width: 280p
+  height: 200px;
+  width: 320px;
+  justify-content: space-evenly;
+  padding-right: 15px;
 }
 
-#hitInfo {
-  height: 190px;
-  width: 300px;
-  flex-direction: row;
+.ship {
+  filter:drop-shadow(4px 4px 4px green);
+  /* filter:grayscale(100%); */
 }
 
-#playerHitInfo {
-  height: 190px;
-  width: 150px;
-  flex-direction: column;
+#pShip0, #aiShip0 {
+  height: 180px;
+  width: 47px;
+}
+#pShip1, #aiShip1 {
+  height: 140px;
+  width: 45px;
+}
+#pShip2, #aiShip2, #pShip3, #aiShip3 {
+  height: 100px;
+  width: 35px;
 }
 
-#aiHitInfo {
-  height: 190px;
-  width: 150px;
-  flex-direction: column;
-}
-
-#playerMainHitMessage {
-  width: 150px;
-  height: 90px;
-  font-size: 25px;
-  margin-bottom: -15px;;
-}
-
-#playerSubHitMessage {
-  width: 150px;
-  height: 90px;
-  font-size: 25px;
-  margin-top: -15px;
-  flex-wrap: wrap;
-}
-
-#aiMainHitMessage {
-  width: 150px;
-  height: 90px;
-  font-size: 25px;
-  margin-bottom: -15px;;
-}
-
-#aiSubHitMessage {
-  width: 150px;
-  height: 90px;
-  font-size: 25px;
-  margin-top: -15px;
-  flex-wrap: wrap;
+#pShip4, #aiShip4 {
+  height: 65px;
+  width: 35px;
 }
