@@ -113,3 +113,40 @@ body * {
   height: 65px;
   width: 35px;
 }
+
+/* 8BIT BUTTONS TAKEN FROM https://www.daddydesign.com/wordpress/updated-how-to-make-digital-8-bit-style-corners-using-only-css/ */
+#restart{
+  width: 120px;
+  float: left;
+  border-left: 5px solid green;
+  border-right: 5px solid green;
+  position: relative;
+  margin-top: 55px;
+  box-sizing: border-box;
+  }
+   
+  #restart #restartWrap{
+  cursor: pointer;
+  display: block;
+  color: green;
+  padding: 5px;
+  margin: -3px 0;
+  border-top: 5px solid green;
+  border-bottom: 5px solid green;
+  }
+   
+  #restart::before,
+  #restart::after,
+  #restart #restartWrap::before,
+  #restart #restartWrap::after{
+  content: '';
+  width: 10px;
+  height: 10px;
+  display: block;
+  position: absolute;
+  background: green;
+  }
+  #restart::before{ top: -5px; left: -1px; }
+  #restart::after{ top: -5px; right: -1px; }
+  #restart #restartWrap::before{ bottom: -5px; left: -1px; }
+  #restart #restartWrap::after{ bottom: -5px; right: -1px; }

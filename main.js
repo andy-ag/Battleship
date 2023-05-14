@@ -98,7 +98,6 @@ class Ship {
         let positions = this.positionArray()
         if (checkDestroyed(positions, board)) {
             this.health = 'destroyed'
-            this.setGlow()
             this.destroyedMessage()
             positions.forEach((position) => {
                 board[position[0]][position[1]] = 'd'
@@ -106,8 +105,8 @@ class Ship {
         }  
         else if (checkHit(positions, board)) {
             this.health = 'damaged'
-            this.setGlow()
         }
+        this.setGlow()
         
     }
 
@@ -237,8 +236,10 @@ document.addEventListener('keyup', function(e) {
         hoverShip(hoveredCell)
 })
 
+document.addEventListener('click', function(e) {
+    if (e.target.id === 'restartWrap') restartGame()
+})
 
-//Restart game
 
 //! PLAY
 init()
@@ -277,7 +278,6 @@ function init() {
     createShips('p')
     createShips('c')
     splitShips()
-
 }
 
 function createBoard(player, playerBoard) {
@@ -325,10 +325,13 @@ function createPlayingArea() {
     addDiv('info2', document.getElementById('infoPanel'))
     addDiv('info3', document.getElementById('infoPanel'))
     createBoard('c', aiBoard)
-    
-    // createLowerPanel()
     addDiv('lowerPanel', document.body)
     addDiv('pInfo', document.getElementById('lowerPanel'))
+    addDiv('restart', document.getElementById('lowerPanel'))
+    addDiv('restartWrap', document.getElementById('restart'))
+    document.getElementById('restartWrap').innerText = 'RESTART'
+    document.getElementById('restart').classList.add('button')
+    document.getElementById('restartWrap').classList.add('buttonWrap')
     addDiv('pMessage1', document.getElementById('pInfo'))
     addDiv('pMessage2', document.getElementById('pInfo'))
     addDiv('pShips', document.getElementById('pInfo'))
@@ -572,24 +575,46 @@ function getRandomItemFromArray(array) {
     return choice
 }
 
-// Implement as bonus
-function toggleShip() {
-    
-}
-
 function toggleTurn() {
     turn *= -1
 }
 
 function restartGame() {
-    
+    // Set all board values to 0
+    // Render boards
+    // Set all ships to unplaced and healthy
+    // Clear all messages
+    for (let i=0; i<height; i++) {
+        for (let j=0; j<width; j++) {
+            playerBoard[i][j] = 0
+            aiBoard[i][j] = 0
+        }
+    }
+    renderBoard()
+    for (let ship of ships) {
+        ship.placed = false
+        ship.health = 'healthy'
+        ship.setGlow()
+    }
+    placeAIShips()
+    initValidTargets()
+    initGridTargets()
+    turnCounter = 1
+    winner = null
+    currentSelection = null
+    turn = 0
+    initHuntInfo()
+    hunting = 0
+    displayMessage(info1, '')
+    displayMessage(info2, '')
+    displayMessage(info3, '')
+    displayMessage(pMessage1, '')
+    displayMessage(pMessage2, '')
+    displayMessage(aiMessage1, '')
+    displayMessage(aiMessage2, '')
 }
 
 //? RENDERING DOM ELEMENTS
-function render() {
-    
-}
-
 function renderBoard() {
     renderPlayerBoard()
     renderAIBoard()
