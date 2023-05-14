@@ -5,10 +5,27 @@ html {
     font-family: 'VT323', monospace;
   }
 
-  h1 {
+h1 {
     font-size: 60px;
     margin: 10px;
-  }
+}
+
+#menu {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  z-index: 1;
+  height: 540px;
+  width: 960px;
+  background-image: url("assets/background.png");
+  background-size: cover;
+  border: 5px solid black;
+}
+
+#easy, #normal, #hard {
+  background-color: rgba(211,211,211,0.5);
+}
  
 body {
     display: flex;
@@ -45,6 +62,8 @@ body * {
     justify-content: space-between;
     margin: 0;
     font-size: 25px;
+    z-index: 0;
+    visibility: hidden;
 }  
 
 #infoPanel {
@@ -63,6 +82,8 @@ body * {
   width: 900px;
   justify-content: space-between;
   font-size: 35px;
+  z-index: 0;
+  visibility: hidden;
 }
 
 #pInfo, #aiInfo {
@@ -92,8 +113,7 @@ body * {
 }
 
 .ship {
-  /* filter: drop-shadow(4px 4px 4px green); */
-  /* filter:grayscale(100%); */
+
 }
 
 #pShip0, #aiShip0 {
@@ -115,26 +135,50 @@ body * {
 }
 
 /* 8BIT BUTTONS TAKEN FROM https://www.daddydesign.com/wordpress/updated-how-to-make-digital-8-bit-style-corners-using-only-css/ */
-#restart{
+.button {
   width: 120px;
   float: left;
-  border-left: 5px solid green;
-  border-right: 5px solid green;
+  border-left: 5px solid white;
+  border-right: 5px solid white;
   position: relative;
   margin-top: 55px;
   box-sizing: border-box;
   }
    
-  #restart #restartWrap{
+.button .buttonWrap{
   cursor: pointer;
   display: block;
-  color: green;
+  color: white;
   padding: 5px;
   margin: -3px 0;
-  border-top: 5px solid green;
-  border-bottom: 5px solid green;
+  border-top: 5px solid white;
+  border-bottom: 5px solid white;
   }
-   
+
+  .button::before,
+  .button::after,
+  .button .buttonWrap::before,
+  .button .buttonWrap::after{
+  content: '';
+  width: 10px;
+  height: 10px;
+  display: block;
+  position: absolute;
+  background: white;
+  } 
+  .button::before{ top: -5px; left: -1px; }
+  .button::after{ top: -5px; right: -1px; }
+  .button .buttonWrap::before{ bottom: -5px; left: -1px; }
+  .button .buttonWrap::after{ bottom: -5px; right: -1px; }
+
+  #restart, #restartWrap {
+     color: green;
+    border-left: 5px solid green;
+    border-right: 5px solid green;
+    border-top: 5px solid green;
+    border-bottom: 5px solid green; 
+  }
+
   #restart::before,
   #restart::after,
   #restart #restartWrap::before,
@@ -146,7 +190,3 @@ body * {
   position: absolute;
   background: green;
   }
-  #restart::before{ top: -5px; left: -1px; }
-  #restart::after{ top: -5px; right: -1px; }
-  #restart #restartWrap::before{ bottom: -5px; left: -1px; }
-  #restart #restartWrap::after{ bottom: -5px; right: -1px; }

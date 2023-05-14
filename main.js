@@ -240,6 +240,30 @@ document.addEventListener('click', function(e) {
     if (e.target.id === 'restartWrap') restartGame()
 })
 
+document.addEventListener('click', function(e) {
+    if (e.target.className !== 'buttonWrap') return
+    switch(e.target.id) {
+        case 'easy':
+            difficulty = 'easy'
+            document.getElementById('menu').style.visibility='hidden'
+            document.getElementById('container').style.visibility='visible'
+            document.getElementById('lowerPanel').style.visibility='visible'
+            break
+        case 'normal':
+            difficulty = 'normal'
+            document.getElementById('menu').style.visibility='hidden'
+            document.getElementById('container').style.visibility='visible'
+            document.getElementById('lowerPanel').style.visibility='visible'
+            break
+        case 'hard':
+            difficulty = 'hard'
+            document.getElementById('menu').style.visibility='hidden'
+            document.getElementById('container').style.visibility='visible'
+            document.getElementById('lowerPanel').style.visibility='visible'
+            break            
+    }
+})
+
 
 //! PLAY
 init()
@@ -593,6 +617,7 @@ function restartGame() {
     renderBoard()
     for (let ship of ships) {
         ship.placed = false
+        ship.orientation = 'vertical'
         ship.health = 'healthy'
         ship.setGlow()
     }
