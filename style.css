@@ -92,7 +92,7 @@ body * {
 }
 
 .ship {
-  filter:drop-shadow(4px 4px 4px green);
+  /* filter: drop-shadow(4px 4px 4px green); */
   /* filter:grayscale(100%); */
 }
 

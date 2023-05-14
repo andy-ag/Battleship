@@ -98,12 +98,16 @@ class Ship {
         let positions = this.positionArray()
         if (checkDestroyed(positions, board)) {
             this.health = 'destroyed'
+            this.setGlow()
             this.destroyedMessage()
             positions.forEach((position) => {
                 board[position[0]][position[1]] = 'd'
             })
         }  
-        else if (checkHit(positions, board)) this.health = 'damaged'
+        else if (checkHit(positions, board)) {
+            this.health = 'damaged'
+            this.setGlow()
+        }
         
     }
 
@@ -115,8 +119,26 @@ class Ship {
         }
     }
 
-    setGlow(colour) {
-          
+    setGlow() {
+       let index = shipNames.indexOf(this.name)
+       let id
+       if (this.owner === 'p') {
+        id = `pShip${index}`
+       } else {
+        id = `aiShip${index}`
+       }
+       let ship = document.getElementById(id)
+       switch(this.health) {
+         case 'healthy':
+            ship.style.filter = `drop-shadow(4px 4px 4px green)`
+            break
+         case 'damaged':
+            ship.style.filter = `drop-shadow(4px 4px 4px orange)`
+            break  
+         case 'destroyed':
+            ship.style.filter = `drop-shadow(4px 4px 4px red)`       
+       }
+        
     }
 
     positionArray() {
@@ -429,6 +451,7 @@ function placeShip(start, ship, player) {
     let col = start[1]
     if (ship.orientation === 'horizontal' && horizontalPlacementAllowed(start, ship, board)) {
         ship.placed = true
+        ship.setGlow()
         ship.startingPosition = start
         for (let i=0; i<ship.length; i++) {
             board[row][col+i] = shipIdentifier
@@ -437,6 +460,7 @@ function placeShip(start, ship, player) {
         }
     } else if (ship.orientation === 'vertical' && verticalPlacementAllowed(start, ship, board)) {
         ship.placed = true
+        ship.setGlow()
         ship.startingPosition = start
         for (let i=0; i<ship.length; i++) {
             board[row+i][col] = shipIdentifier
