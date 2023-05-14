@@ -30,14 +30,13 @@ const playerCellStyle = [
 
 const aiCellStyle = [
     {0: 'white'},
-    {'s': 'grey'},
+    {'s': 'white'},
     {'m': 'lightblue'},
     {'h': 'orange'},
     {'d': 'red'}
 ] 
 
 const difficulties = ['easy', 'normal', 'hard']
-const gamemodes = ['normal', 'salvo']
 const shipHealth = ['healthy', 'damaged', 'destroyed']
 const shipOrientations = ['vertical', 'horizontal']
 
@@ -49,7 +48,6 @@ const destroyIdentifier = 'd'
 
 //? STATE VARIABLES
 let hoveredCell
-let gamemode
 let difficulty
 let countryPlayer
 let countryAI
@@ -71,15 +69,6 @@ let huntInfo
 let modelBoard
 let accumulatorBoard
 let activeShips
-
-//? VISUAL ASSETS
-
-//? MUSIC & SOUND EFFECTS
-
-//? ELEMENT REFERENCES
-const musicButton = null
-const soundButton = null
-// const container = document.getElementById('container')
 
 //? CLASSES & INSTANCES
 class Ship {
@@ -158,17 +147,6 @@ class Ship {
 }
 
 //! EVENT LISTENERS
-// Pick gamemode
-
-// Pick difficulty
-
-// Pick player country
-
-// Pick opponent country
-
-// Place ships
-
-// Select cell to fire on
 document.addEventListener('click', function(e) {
     if (!isEnemyCell(e)) return
     if (turn !== 1) return
@@ -180,11 +158,11 @@ document.addEventListener('click', function(e) {
         postTurn()
         displayMessage(info1, 'AI TURN')
         displayMessage(info2, `TURN ${turnCounter}`)
-        takeTurn(difficulty)
+        setTimeout(() => { takeTurn(difficulty)
         displayMessage(info1, 'PLAYER TURN')
         displayMessage(info2, `TURN ${turnCounter}`)
         postTurn()
-        turnCounter++
+        turnCounter++}, 2000)
     }
 })
 
@@ -264,7 +242,6 @@ document.addEventListener('click', function(e) {
     }
 })
 
-
 //! PLAY
 init()
 const info1 = document.getElementById('info1')
@@ -276,14 +253,11 @@ const aiMessage1 = document.getElementById('aiMessage1')
 const aiMessage2 = document.getElementById('aiMessage2')
 const lowerPanel = document.getElementById('lowerPanel')
 placeAIShips()
-// placeShipsRandomly(playerShips, 'p')
-
 
 //! FUNCTIONS
 //? GAME SET-UP, PLAYER ACTIONS, STATE TRANSITIONS
 
 function init() {
-    gamemode = null
     difficulty = 'hard'
     countryPlayer = null
     countryAI = null
@@ -453,7 +427,7 @@ function hoverShip(cell) {
         let positions = currentSelection.positionArray()
         positions.forEach((position) => {
             let cell = getCellFromIndex('p',position[0], position[1])
-            cell.style.backgroundColor='pink'
+            cell.style.backgroundColor='lightgrey'
         })
     } 
     else {
@@ -461,13 +435,13 @@ function hoverShip(cell) {
         let positions = currentSelection.positionArray()
         positions.forEach((position) => {
             let cell = getCellFromIndex('p',position[0], position[1])
-            cell.style.backgroundColor='pink'
+            cell.style.backgroundColor='lightgrey'
         })
     }
 }
 
 function hoverCell(cell) {
-    cell.style.backgroundColor = 'pink'
+    cell.style.backgroundColor = 'lightgrey'
 }
 
 function placeShip(start, ship, player) {
@@ -840,14 +814,6 @@ function checkWinAI() {
     return false
 }
 
-function winScreen() {
-    
-}
-
-function lossScreen() {
-    
-}
-
 function displayMessage(element, message) {
     element.innerText = message
 }
@@ -859,7 +825,6 @@ function toggleMusic() {
 function toggleAudio() {
 
 }
-
 
 //? AI
 function takeTurn(difficulty) {
