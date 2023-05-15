@@ -192,21 +192,21 @@ body * {
   height: 8px;
   display: block;
   position: absolute;
-  background: rgb(66 203 63);
+  background: rgb(70 245 113);
   }
 
   #restart {
     width: 130px;
     float: left;
-    border-left: 4px solid rgb(66 203 63);
-    border-right: 4px solid rgb(66 203 63);
+    border-left: 4px solid rgb(70 245 113);
+    border-right: 4px solid rgb(70 245 113);
     position: relative;
     margin-top: 55px;
     box-sizing: border-box;
     background-color: white;
-    color: rgb(66 203 63);
-    border-top: 2px solid rgb(66 203 63);
-    border-bottom: 2px solid rgb(66 203 63);
+    color: rgb(70 245 113);
+    border-top: 2px solid rgb(70 245 113);
+    border-bottom: 2px solid rgb(70 245 113);
     cursor: pointer;
     display: block;
     padding: 2px; 
@@ -216,9 +216,9 @@ body * {
     text-align: center;
     cursor: pointer;
     display: block;
-    color: rgb(66 203 63);
+    color: rgb(70 245 113);
     padding: 2px;
     margin: -6px 0;
-    border-top: 2px solid rgb(66 203 63);
-    border-bottom: 2px solid rgb(66 203 63);
+    border-top: 2px solid rgb(70 245 113);
+    border-bottom: 2px solid rgb(70 245 113);
     }
