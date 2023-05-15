@@ -144,6 +144,7 @@ document.addEventListener('click', function(e) {
         displayMessage(info2, `TURN ${turnCounter}`)
         fireOnCell(cell)
         postTurn()
+        if (winner) return
         displayMessage(info1, 'AI TURN')
         displayMessage(info2, `TURN ${turnCounter}`)
         setTimeout(() => { takeTurn(difficulty)
@@ -255,7 +256,7 @@ function init() {
     initValidTargets()
     initGridTargets()
     turnCounter = 1
-    winner = null
+    winner = false
     currentSelection = null
     turn = 0
     initHuntInfo()
@@ -606,7 +607,7 @@ function restartGame() {
     initValidTargets()
     initGridTargets()
     turnCounter = 1
-    winner = null
+    winner = false
     currentSelection = null
     turn = 0
     initHuntInfo()
@@ -781,7 +782,8 @@ function getShipFromCoordinates(player, coordinates) {
 
 function checkWin() {
     if (checkWinPlayer() || checkWinAI()) {
-       return true 
+        winner = true
+        return true 
     } else {
         return false
     }
