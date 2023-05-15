@@ -181,6 +181,8 @@ body * {
   .button .buttonWrap::before{ bottom: -5px; left: -1px; }
   .button .buttonWrap::after{ bottom: -5px; right: -1px; }
 
+
+
   #restart::before,
   #restart::after,
   #restart #restartWrap::before,
@@ -190,21 +192,21 @@ body * {
   height: 8px;
   display: block;
   position: absolute;
-  background: green;
+  background: rgb(66 203 63);
   }
 
   #restart {
     width: 130px;
     float: left;
-    border-left: 4px solid green;
-    border-right: 4px solid green;
+    border-left: 4px solid rgb(66 203 63);
+    border-right: 4px solid rgb(66 203 63);
     position: relative;
     margin-top: 55px;
     box-sizing: border-box;
     background-color: white;
-    color: green;
-    border-top: 2px solid green;
-    border-bottom: 2px solid green;
+    color: rgb(66 203 63);
+    border-top: 2px solid rgb(66 203 63);
+    border-bottom: 2px solid rgb(66 203 63);
     cursor: pointer;
     display: block;
     padding: 2px; 
@@ -214,9 +216,9 @@ body * {
     text-align: center;
     cursor: pointer;
     display: block;
-    color: green;
+    color: rgb(66 203 63);
     padding: 2px;
     margin: -6px 0;
-    border-top: 2px solid green;
-    border-bottom: 2px solid green;
+    border-top: 2px solid rgb(66 203 63);
+    border-bottom: 2px solid rgb(66 203 63);
     }

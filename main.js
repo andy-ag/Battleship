@@ -3,6 +3,10 @@
 const letters = ['A','B','C','D','E','F','G','H','I','J']
 const width = 10
 const height = 10
+let red = 'rgb(234 27 69'
+let orange = 'rgb(255 141 25)'
+let green = 'rgb(66 203 63)'
+let blue = 'rgb(0 188 253)'
 const difficulties = ['easy', 'normal', 'hard']
 const shipOrientations = ['vertical', 'horizontal']
 const shipNames = ['carrier', 'battleship', 'cruiser', 'submarine', 'destroyer']
@@ -19,17 +23,17 @@ const shipInfo = [
 const playerCellStyle = [
     {0: 'white'},
     {'s': 'grey'},
-    {'m': 'lightblue'},
-    {'h': 'orange'},
-    {'d': 'red'}
+    {'m': blue},
+    {'h': orange},
+    {'d': red}
 ]
 
 const aiCellStyle = [
     {0: 'white'},
     {'s': 'white'},
-    {'m': 'lightblue'},
-    {'h': 'orange'},
-    {'d': 'red'}
+    {'m': blue},
+    {'h': orange},
+    {'d': red}
 ] 
 
 
@@ -106,13 +110,13 @@ class Ship {
        let ship = document.getElementById(id)
        switch(this.health) {
          case 'healthy':
-            ship.style.filter = `drop-shadow(4px 4px 4px green)`
+            ship.style.filter = `drop-shadow(4px 4px 4px ${green})`
             break
          case 'damaged':
-            ship.style.filter = `drop-shadow(4px 4px 4px orange)`
+            ship.style.filter = `drop-shadow(4px 4px 4px ${orange})`
             break  
          case 'destroyed':
-            ship.style.filter = `drop-shadow(4px 4px 4px red)`       
+            ship.style.filter = `drop-shadow(4px 4px 4px ${red})`       
        }
         
     }
