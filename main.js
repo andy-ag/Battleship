@@ -3,8 +3,11 @@
 const letters = ['A','B','C','D','E','F','G','H','I','J']
 const width = 10
 const height = 10
+const difficulties = ['easy', 'normal', 'hard']
+const shipOrientations = ['vertical', 'horizontal']
 const shipNames = ['carrier', 'battleship', 'cruiser', 'submarine', 'destroyer']
-const playerIndicators = ['p', 'c']
+const imageSources = ['assets/carrier.png','assets/battleship.png','assets/cruiser.png','assets/submarine.png','assets/destroyer.png']
+
 const shipInfo = [
     {name: 'carrier', length: 5}, 
     {name: 'battleship', length: 4},
@@ -12,14 +15,7 @@ const shipInfo = [
     {name: 'submarine', length: 3},
     {name: 'destroyer', length: 2}
 ]
-const countries = [
-    {name: 'USA', flag: 'src', flagLoss: 'src', anthem: 'src'},
-    {name: 'UK', flag: 'src', flagLoss: 'src', anthem: 'src'},
-    {name: 'Russia', flag: 'src', flagLoss: 'src', anthem: 'src'},
-    {name: 'China', flag: 'src', flagLoss: 'src', anthem: 'src'}
-]
 
-const imageSources = ['assets/carrier.png','assets/battleship.png','assets/cruiser.png','assets/submarine.png','assets/destroyer.png']
 const playerCellStyle = [
     {0: 'white'},
     {'s': 'grey'},
@@ -36,18 +32,10 @@ const aiCellStyle = [
     {'d': 'red'}
 ] 
 
-const difficulties = ['easy', 'normal', 'hard']
-const shipHealth = ['healthy', 'damaged', 'destroyed']
-const shipOrientations = ['vertical', 'horizontal']
-
-//? BOARD ENCODINGS
-const shipIdentifier = 's'
-const hitIdentifier = 'h'
-const missIdentifier = 'm'
-const destroyIdentifier = 'd'
 
 //? STATE VARIABLES
 let hoveredCell
+let lastValidHover
 let difficulty
 let countryPlayer
 let countryAI
@@ -192,12 +180,12 @@ document.addEventListener('mouseover', function(e) {
     if (allShipsPlaced()) return
     hoveredCell = e.target
     renderPlayerBoard()
-    hoverShip(hoveredCell)
+    validHover(hoveredCell)
+    hoverShip(lastValidHover)
 })
 
 document.addEventListener('mouseover', function(e) {
     if (!isEnemyCell(e)) return
-    if (turn !== 1) return
     hoveredCell = e.target
     let row = getCoordsFromCell(hoveredCell)[0]
     let col = getCoordsFromCell(hoveredCell)[1]
@@ -313,8 +301,6 @@ function addImg(id, src, appendTo) {
     let img = document.createElement
 }
 
-
-
 function createPlayingArea() {
     addDiv('container', document.body)
     createBoard('p', playerBoard)
@@ -418,6 +404,27 @@ function selectedShip() {
     return availableShips[0]
 }
 
+function validHover(cell) {
+    currentSelection = selectedShip()
+    let middle = getCoordsFromCell(cell)
+    const adjustment = middleOfArrayIndex(currentSelection.length)
+    if (currentSelection.orientation === 'horizontal') {
+        let checkBounds = (middle[1]-adjustment+currentSelection.length<=width && middle[1]-adjustment >= 0)
+        currentSelection.startingPosition = [middle[0], middle[1]-adjustment]
+        if (checkBounds) {
+            lastValidHover = cell
+        }
+    } 
+    else {
+        currentSelection.startingPosition = [middle[0]-adjustment, middle[1]]
+        let checkBounds = (middle[0]-adjustment+currentSelection.length<=height && middle[0]-adjustment >= 0)
+        currentSelection.startingPosition = [middle[0]-adjustment, middle[1]]
+        if (checkBounds) {
+            lastValidHover = cell
+        }
+    }
+}
+
 function hoverShip(cell) {
     currentSelection = selectedShip()
     let middle = getCoordsFromCell(cell)
@@ -455,7 +462,7 @@ function placeShip(start, ship, player) {
         ship.setGlow()
         ship.startingPosition = start
         for (let i=0; i<ship.length; i++) {
-            board[row][col+i] = shipIdentifier
+            board[row][col+i] = 's'
             renderCell([row, col+i], player)
             tagCell([row, col+i], player, ship)
         }
@@ -464,7 +471,7 @@ function placeShip(start, ship, player) {
         ship.setGlow()
         ship.startingPosition = start
         for (let i=0; i<ship.length; i++) {
-            board[row+i][col] = shipIdentifier
+            board[row+i][col] = 's'
             renderCell([row+i, col], player)
             tagCell([row+i, col], player, ship)
         }
@@ -754,20 +761,6 @@ function getIndexOfCoordinateArray(outerArray, coordinateArray) {
         })) 
 }
 
-// BROKE WHEN MAKING FUNCTION ABOVE, TEST LATER
-// function getShipFromCoordinates(player, coordinates) {
-//     let targetShip = null
-//     for (let ship of ships) {
-//         if (ship.owner !== player) continue
-//         let shipCoordinates = ship.positionArray()
-//         if (coordinateArrayIsElementOfArray(shipCoordinates, coordinates)) {
-//             targetShip = ship
-//         }
-//         targetShip = ship
-//     }
-//     return targetShip
-// }
-
 function getShipFromCoordinates(player, coordinates) {
     let row = coordinates[0]
     let col = coordinates[1]
@@ -818,14 +811,6 @@ function displayMessage(element, message) {
     element.innerText = message
 }
 
-function toggleMusic() {
-
-}
-
-function toggleAudio() {
-
-}
-
 //? AI
 function takeTurn(difficulty) {
     switch(difficulty) {
@@ -843,7 +828,7 @@ function randomAIShot() {
     let target = getRandomItemFromArray(validTargets)
     let index = validTargets.indexOf(target)
     validTargets.splice(index, 1)
-    fireOnCell(getCellFromIndex('p', target[0], target[1]))
+    return fireOnCell(getCellFromIndex('p', target[0], target[1]))
 }
 
 function takeTurnEasy() {
@@ -1020,8 +1005,18 @@ function takeTurnHard() {
     let tStack = huntInfo.targetStack[hIndex]
     let hArray = huntInfo.hitArray[hIndex]
     if (turnCounter === 1) {
-        randomAIShot() 
-        return
+        let target = getRandomItemFromArray(validTargets)
+        let index = validTargets.indexOf(target)
+        validTargets.splice(index, 1)
+        let shotCell = fireOnCell(getCellFromIndex('p', target[0], target[1]))
+        if (typeof(shotCell) === 'object') {
+            hunting = 1
+            hShip.push(shotCell)
+            hArray.push(target)
+            let newTargets = getValidNeighbours([target[0], target[1]], validTargets)
+            newTargets.forEach(target => tStack.push(target))
+        }
+        return   
     }
     if (hunting === 1) {
         hunt(hIndex, hShip, tStack, hArray)
@@ -1030,7 +1025,7 @@ function takeTurnHard() {
         // If hunting === 0, given known board, run probability density estimation for each square
         // For each non-interacted-with square, check whether remaining ships can be placed
         // vertically or horizontally. If so, iterate ticker value of cells that the ship would occupy
-        // Shoot at cell with highest ticker value, reset tickers
+        // Shoot at cell with highest ticker value
         // At most 99*2*5 = 990 cell check operations
         
         // If ship is hit, proceed with hunting algorithm
@@ -1078,18 +1073,12 @@ function takeTurnHard() {
             let newTargets = getValidNeighbours([target[0], target[1]], validTargets)
             newTargets.forEach(target => tStack.push(target))
         }   
-
-
-
-
-    }
-    
+    }  
 }
 
 function placeAIShips() {
     placeShipsRandomly(ships, 'c')
 }
-
 
 function getIndexOfMaxValue(array2d) {
     let largest = array2d.reduce((max, row) => Math.max(max, ...row), -Infinity)
