@@ -8,14 +8,14 @@ The project is hosted <a href="https://andy-ag.github.io/Battleship/" target="_b
 
 ## Code Installation & Setup Guide
 
-1. **Clone the Repository**:  
+1. **Clone the Repository**  
    Firstly, you need to clone the repository to your local machine. Open your terminal and run:  
    `git clone https://github.com/andy-ag/Battleship.git`  
 
-2. **Navigate to the Project Directory**:  
+2. **Navigate to the Project Directory**  
    `cd Battleship`  
 
-3. **Serve the Game Locally**:  
+3. **Serve the Game Locally**  
    If you have Python installed on your machine (most systems have it pre-installed), you can start a simple HTTP server:  
    - For Python 2.x:  
      `python -m SimpleHTTPServer`  
@@ -23,12 +23,12 @@ The project is hosted <a href="https://andy-ag.github.io/Battleship/" target="_b
      `python -m http.server`  
    This will start a local server on port `8000`. If you want to specify a different port, you can add it after the command, like `python -m http.server 8080`.
 
-4. **Open the Game in Your Browser**:  
+4. **Open the Game in Your Browser**  
    Once the server is running, open your browser and go to:  
    `http://localhost:8000`  
    You should see the game running!
 
-5. **Enjoy!**:  
+5. **Enjoy!**  
    Play the game and have fun. If you encounter any issues, please report them on the GitHub repository.
 
 ## Timeframe and Working Team
