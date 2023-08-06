@@ -3,7 +3,8 @@
 This project was the first one completed as part of the General Assembly SEI Bootcamp. The goal of the project was to use vanilla JavaScript, HTML and CSS to create a browser game. The game I chose was Battleship, as I had enjoyed playing it when I was young, and implementing a human-like AI to play against presented an interesting challenge.
 
 ## Deployment link
-The project is hosted [here](https://andy-ag.github.io/Battleship/).
+The project is hosted <a href="https://andy-ag.github.io/Battleship/" target="_blank">here</a>.
+
 
 ## Code Installation & Setup Guide
 
