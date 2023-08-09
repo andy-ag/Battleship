@@ -61,17 +61,25 @@ The core UI, however, was mostly unchanged, and really helped me by providing a 
 
 ## Screenshots: Wireframe vs Final Product
 
+<!-- Menu:  
+<img src="./readme_assets/menu_wf.png" alt="" width="300"/> <img src="./readme_assets/menu_f.png" alt="" width="300"/> -->
 Menu:  
-<img src="./readme_assets/menu_wf.png" alt="" width="300"/> <img src="./readme_assets/menu_f.png" alt="" width="300"/>
+<img src="https://i.imgur.com/j0hfPwt.png" alt="" width="300"/> <img src="https://i.imgur.com/Kfjhdfk.png" alt="" width="300"/>
 
+<!-- Ship placement:  
+<img src="./readme_assets/place_wf.png" alt="" width="300"/> <img src="./readme_assets/place_f.png" alt="" width="300"/> -->
 Ship placement:  
-<img src="./readme_assets/place_wf.png" alt="" width="300"/> <img src="./readme_assets/place_f.png" alt="" width="300"/>
+<img src="https://i.imgur.com/qHvJ233.png" alt="" width="300"/> <img src="https://i.imgur.com/DRhhoj4.png" alt="" width="300"/>
 
+<!-- Ship destruction:  
+<img src="./readme_assets/destroyed_wf.png" alt="" width="300"/> <img src="./readme_assets/destroyed_f.png" alt="" width="300"/> -->
 Ship destruction:  
-<img src="./readme_assets/destroyed_wf.png" alt="" width="300"/> <img src="./readme_assets/destroyed_f.png" alt="" width="300"/>
+<img src="https://i.imgur.com/ZqxUokd.png" alt="" width="300"/> <img src="https://i.imgur.com/hI9tWuQ.png" alt="" width="300"/>
 
+<!-- Win / loss screen:  
+<img src="./readme_assets/victory_wf.png" alt="" width="300"/> <img src="./readme_assets/defeat_f.png" alt="" width="300"/> -->
 Win / loss screen:  
-<img src="./readme_assets/victory_wf.png" alt="" width="300"/> <img src="./readme_assets/defeat_f.png" alt="" width="300"/>
+<img src="https://i.imgur.com/08fvHMH.png" alt="" width="300"/> <img src="https://i.imgur.com/Z4FiqDf.png" alt="" width="300"/>
 
 After the wireframe was complete, I produced some pseudocode for the gameplay process. While I omitted the salvo gamemode due to it being a bonus objective, and timelines not permitting, the pseudocode was followed precisely, and assisted me in implementing the necessary functionality for the game efficiently. The pseudocode for the end-to-end gameplay process can be found below:
 ```
@@ -409,11 +417,15 @@ After the AI was implemented by the end of day 3, all that was left to do was to
 
 I used Midjourney to generate the difficulty selection screen and the ship images, and gave the ships a light glow to transmit the status of their health to the user intuitively.
 
+<!-- Ship glow:  
+<img src="./readme_assets/ships_l.png" alt="" width="300"/> <img src="./readme_assets/ships_r.png" alt="" width="300"/> -->
 Ship glow:  
-<img src="./readme_assets/ships_l.png" alt="" width="300"/> <img src="./readme_assets/ships_r.png" alt="" width="300"/>
+<img src="https://i.imgur.com/X397vCr.png" alt="" width="300"/> <img src="https://i.imgur.com/Xd95TUX.png" alt="" width="300"/>
 
+<!-- Difficulty selection:  
+<img src="./readme_assets/menu_f.png" alt="" width="500"/> -->
 Difficulty selection:  
-<img src="./readme_assets/menu_f.png" alt="" width="500"/>
+<img src="https://i.imgur.com/Kfjhdfk.png" alt="" width="500"/>
 
 ## Challenges
 A strategic challenge of the project was scoping it appropriately given the timeframes, and the fact that this was the first project of this nature that I have undertaken. This involved identifying core and subsidiary features for the game, identifying the appropriate time budgets for the design & UI and the underlying game mechanics, and ensuring I was on track to be aligned with these allocations.
