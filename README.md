@@ -63,22 +63,22 @@ The core UI, however, was mostly unchanged, and really helped me by providing a 
 
 <!-- Menu:  
 <img src="./readme_assets/menu_wf.png" alt="" width="300"/> <img src="./readme_assets/menu_f.png" alt="" width="300"/> -->
-Menu:  
+Menu - <a href="https://i.imgur.com/j0hfPwt.png" target="_blank" rel="noopener noreferrer">wireframe</a> / <a href="https://i.imgur.com/Kfjhdfk.png" target="_blank" rel="noopener noreferrer">final</a>:  
 <img src="https://i.imgur.com/j0hfPwt.png" alt="" width="300"/> <img src="https://i.imgur.com/Kfjhdfk.png" alt="" width="300"/>
 
 <!-- Ship placement:  
 <img src="./readme_assets/place_wf.png" alt="" width="300"/> <img src="./readme_assets/place_f.png" alt="" width="300"/> -->
-Ship placement:  
+Ship placement - <a href="https://i.imgur.com/qHvJ233.png" target="_blank" rel="noopener noreferrer">wireframe</a> / <a href="https://i.imgur.com/DRhhoj4.png" target="_blank" rel="noopener noreferrer">final</a>:  
 <img src="https://i.imgur.com/qHvJ233.png" alt="" width="300"/> <img src="https://i.imgur.com/DRhhoj4.png" alt="" width="300"/>
 
 <!-- Ship destruction:  
 <img src="./readme_assets/destroyed_wf.png" alt="" width="300"/> <img src="./readme_assets/destroyed_f.png" alt="" width="300"/> -->
-Ship destruction:  
+Ship destruction - <a href="https://i.imgur.com/ZqxUokd.png" target="_blank" rel="noopener noreferrer">wireframe</a> / <a href="https://i.imgur.com/hI9tWuQ.png" target="_blank" rel="noopener noreferrer">final</a>:  
 <img src="https://i.imgur.com/ZqxUokd.png" alt="" width="300"/> <img src="https://i.imgur.com/hI9tWuQ.png" alt="" width="300"/>
 
 <!-- Win / loss screen:  
 <img src="./readme_assets/victory_wf.png" alt="" width="300"/> <img src="./readme_assets/defeat_f.png" alt="" width="300"/> -->
-Win / loss screen:  
+Win / loss screen - <a href="https://i.imgur.com/08fvHMH.png" target="_blank" rel="noopener noreferrer">wireframe</a> / <a href="https://i.imgur.com/Z4FiqDf.png" target="_blank" rel="noopener noreferrer">final</a>:  
 <img src="https://i.imgur.com/08fvHMH.png" alt="" width="300"/> <img src="https://i.imgur.com/Z4FiqDf.png" alt="" width="300"/>
 
 After the wireframe was complete, I produced some pseudocode for the gameplay process. While I omitted the salvo gamemode due to it being a bonus objective, and timelines not permitting, the pseudocode was followed precisely, and assisted me in implementing the necessary functionality for the game efficiently. The pseudocode for the end-to-end gameplay process can be found below:
@@ -419,12 +419,12 @@ I used Midjourney to generate the difficulty selection screen and the ship image
 
 <!-- Ship glow:  
 <img src="./readme_assets/ships_l.png" alt="" width="300"/> <img src="./readme_assets/ships_r.png" alt="" width="300"/> -->
-Ship glow:  
+Ship glow - <a href="https://i.imgur.com/X397vCr.png" target="_blank" rel="noopener noreferrer">player</a> / <a href="https://i.imgur.com/Xd95TUX.png" target="_blank" rel="noopener noreferrer">AI</a>:  
 <img src="https://i.imgur.com/X397vCr.png" alt="" width="300"/> <img src="https://i.imgur.com/Xd95TUX.png" alt="" width="300"/>
 
 <!-- Difficulty selection:  
 <img src="./readme_assets/menu_f.png" alt="" width="500"/> -->
-Difficulty selection:  
+<a href="https://i.imgur.com/Kfjhdfk.png" target="_blank" rel="noopener noreferrer">Difficulty selection</a>:  
 <img src="https://i.imgur.com/Kfjhdfk.png" alt="" width="500"/>
 
 ## Challenges
